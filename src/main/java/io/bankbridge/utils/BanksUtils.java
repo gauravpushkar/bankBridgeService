@@ -47,14 +47,4 @@ public class BanksUtils {
         return OBJECT_MAPPER.writeValueAsString(model);
     }
 
-    public static String transformResult(List<BankModel> models) throws JsonProcessingException {
-        List<Map<String, String>> result = new ArrayList<>();
-        models.forEach(model -> {
-            Map<String, String> map = new HashMap<>();
-            map.put("id", model.getBic());
-            map.put("name", model.getName());
-            result.add(map);
-        });
-        return getJsonString(result);
-    }
 }

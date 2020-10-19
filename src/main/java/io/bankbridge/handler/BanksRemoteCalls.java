@@ -1,13 +1,17 @@
 package io.bankbridge.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.bankbridge.cache.CacheFactory;
 import io.bankbridge.exception.BanksUncheckedException;
 import io.bankbridge.httpClient.BanksHttpClientFactory;
 import io.bankbridge.httpClient.HttpClientEnum;
 import io.bankbridge.model.BankModel;
+import io.bankbridge.utils.ApiVersionEnum;
 import io.bankbridge.utils.BanksPropertyHandler;
 import io.bankbridge.utils.BanksUtils;
 import io.bankbridge.utils.Constants;
+import org.apache.commons.lang3.StringUtils;
+import org.ehcache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +34,7 @@ public class BanksRemoteCalls implements IBanksHandler {
     private static final BanksRemoteCalls INSTANCE = new BanksRemoteCalls();
     private static final AtomicBoolean BANKS_ENDPOINT_DETAILS_LOADED = new AtomicBoolean(false);
     private static final ReentrantLock lock = new ReentrantLock();
-    //private static final Cache<String, String> CACHE = CacheFactory.getCache(ApiVersionEnum.V2);
+    private static final Cache<String, String> CACHE = CacheFactory.getCache(ApiVersionEnum.V2);
     private static Map<String, String> config;
 
     public static BanksRemoteCalls getInstance() {
@@ -70,14 +74,24 @@ public class BanksRemoteCalls implements IBanksHandler {
             }
         }
         String result = null;
-        //This pool can be reused for all request at can be global but it needs to benchmarked and then number of
+        //This pool can be reused for all requests at global level but it needs to benchmarked and then number of
         // threads need to be set accordingly
         ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
         List<CompletableFuture<BankModel>> completableFutureList = new ArrayList<>();
+        //This is to hold the data which might be in cache already
         List<Map<String, String>> dataPresentInCache = new ArrayList<>();
         try {
             config.forEach((key, value) -> {
-
+                String cacheValue = CACHE.get(key);
+                if(!Objects.isNull(cacheValue))
+                {
+                    Map<String,String> map = new HashMap<>();
+                    map.put("id", key);
+                    map.put("name", cacheValue);
+                    dataPresentInCache.add(map);
+                    return;
+                }
+                //Make remote calls only for data which is not present in Cache
                 CompletableFuture<BankModel> completableFuture = CompletableFuture.supplyAsync(() -> {
                     BankModel bankModel = BanksHttpClientFactory.getHttpClient(HttpClientEnum.APACHE).handleGet(key,
                             value, BankModel.class);
@@ -109,7 +123,10 @@ public class BanksRemoteCalls implements IBanksHandler {
             });
 
             List<BankModel> bankModels = aggregatedFuture.get();
-            result = BanksUtils.transformResult(bankModels);
+            List<Map<String,String>> transformedAndFilteredData = transformAndFilterData(bankModels);
+            transformedAndFilteredData.addAll(dataPresentInCache);
+            result = BanksUtils.getJsonString(transformedAndFilteredData);
+
         } catch (JsonProcessingException | ExecutionException | InterruptedException ex) {
             //Any exception at this stage is a candidate of 5XX
             String errorMsg = "Error occurred while processing request for V2 endpoint";
@@ -130,6 +147,32 @@ public class BanksRemoteCalls implements IBanksHandler {
                         Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
+        return result;
+    }
+
+    //Transform and filter data fetched from remote endpoints
+    public static List<Map<String, String>> transformAndFilterData(List<BankModel> models) throws JsonProcessingException {
+        List<Map<String, String>> result = new ArrayList<>();
+        List<BankModel> invalidData = new ArrayList<>();
+        models.forEach(model -> {
+            String bic = model.getBic();
+            String bankName = model.getName();
+            if (StringUtils.isEmpty(bic) || StringUtils.isEmpty(bankName)) {
+                //This is too verbose logging might not be needed in a prod system
+                LOGGER.warn("Invalid data {}, filtering it out", model);
+                invalidData.add(model);
+                return;
+            }
+            Map<String, String> map = new HashMap<>();
+            //Let's put correct data in cache received from remote servers
+            //I hope it evicts extra entries silently
+            CACHE.put(bic, bankName);
+            //Build data-structure for easy mapping to Json
+            map.put("id", bic);
+            map.put("name", bankName);
+            result.add(map);
+        });
+        LOGGER.warn("Filtered records {}", invalidData);
         return result;
     }
 }

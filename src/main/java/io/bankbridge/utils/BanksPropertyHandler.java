@@ -58,6 +58,16 @@ public class BanksPropertyHandler {
 
         /* Remote Banks Server Port */
         private int remoteBankServerPort = 1234;
+        /* Timeout for async request  top level timeout*/
+        private int asyncRequestTimeout = 4000;
+
+        public int getAsyncRequestTimeout() {
+            return asyncRequestTimeout;
+        }
+
+        public void setAsyncRequestTimeout(int asyncRequestTimeout) {
+            this.asyncRequestTimeout = asyncRequestTimeout;
+        }
 
         public int getRemoteBankServerPort() {
             return remoteBankServerPort;

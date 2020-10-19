@@ -21,7 +21,7 @@ public class RemoteBankServers {
 				"\"auth\":\"OpenID\"\n" +
 				"}");
 		get("/bes", (request, response) -> "{\n" +
-				"\"bic\":\"9101\",\n" +
+				"\"bic\":\"9870\",\n" +
 				"\"name\":\"Banco de espiritu santo\",\n" +
 				"\"countryCode\":\"PT\",\n" +
 				"\"auth\":\"SSL\"\n" +

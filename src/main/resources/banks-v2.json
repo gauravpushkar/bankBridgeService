@@ -1,6 +1,6 @@
 {
-	"Royal Bank of Boredom":"http://localhost:1234/rbb",
-	"Credit Sweets":"http://localhost:1234/cs",
-	"Banco de espiritu santo":"http://localhost:1234/bes"
+	"1234":"http://localhost:1234/rbb",
+	"5678":"http://localhost:1234/cs",
+	"9870":"http://localhost:1234/bes"
 		
 }

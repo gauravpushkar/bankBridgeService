@@ -1,6 +1,7 @@
 package io.bankbridge.api;
 
 import io.bankbridge.handler.BanksRemoteCalls;
+import io.bankbridge.utils.BanksPropertyHandler;
 import io.bankbridge.utils.Constants;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.slf4j.Logger;
@@ -23,13 +24,14 @@ import java.util.concurrent.TimeUnit;
 public class BanksRemoteCallsApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(BanksCacheBasedApi.class);
     private static final BanksRemoteCalls BANKS_REMOTE_CALLS = BanksRemoteCalls.getInstance();
+    private static final BanksPropertyHandler PROPERTY_HANDLER = BanksPropertyHandler.getInstance();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
     public void getBanks(@Suspended final AsyncResponse asyncResponse) {
-        //configure time-out and set timeout handler
-        asyncResponse.setTimeout(1000, TimeUnit.MILLISECONDS);
+        //configure time-out and set timeout handler, while debugging request this needs to be set to higher value
+        asyncResponse.setTimeout(PROPERTY_HANDLER.getApplicationProperties().getAsyncRequestTimeout(), TimeUnit.MILLISECONDS);
         asyncResponse.setTimeoutHandler(ar -> ar.resume(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(
                 Constants.REQUEST_TIMED_OUT).build()));
         //invoke backend sub-routine

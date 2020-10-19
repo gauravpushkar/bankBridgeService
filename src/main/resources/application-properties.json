@@ -6,5 +6,8 @@
   "httpClientDefaultMaxPerRoute": 4,
   "jettyServerPort": 8080,
   "jettyServerIpAddressToBind": "127.0.01",
-  "ehcacheHeapEntryUnit": 2000
+  "ehcacheHeapEntryUnit": 2000,
+  "threadPoolTerminationWaitTime": 2,
+  "remoteBankServerPort": 1234,
+  "asyncRequestTimeout": 4000
 }
