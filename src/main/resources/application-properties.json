@@ -1,0 +1,10 @@
+{
+  "httpClientConnectionRequestTimeout": 3000,
+  "httpClientConnectTimeout": 3000,
+  "httpClientSocketTimeout": 3000,
+  "httpClientMaxPooledConnections": 5,
+  "httpClientDefaultMaxPerRoute": 4,
+  "jettyServerPort": 8080,
+  "jettyServerIpAddressToBind": "127.0.01",
+  "ehcacheHeapEntryUnit": 2000
+}
