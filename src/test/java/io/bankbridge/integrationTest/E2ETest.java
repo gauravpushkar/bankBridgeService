@@ -1,15 +1,21 @@
-package io.bankbridge.integrationTests;
+package io.bankbridge.integrationTest;
 
 import io.bankbridge.BankBridgeJettyServer;
 import io.bankbridge.httpClient.BanksHttpClientFactory;
 import io.bankbridge.httpClient.HttpClientEnum;
 import io.bankbridge.httpClient.IBanksHttpClient;
-import io.bankbridge.unitsTests.TestModel;
+import io.bankbridge.model.ResultModel;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/***
+ * When executed using commandline I have seen some flakiness in this test due to Jetty not stopping correctly
+ * and then not letting bind again on the same address.
+ * Jetty has exiting issues in programmatic shutdown (SIGTERM) should help here.
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class E2ETest {
     private static final Logger LOGGER = LoggerFactory.getLogger(E2ETest.class);
@@ -45,14 +51,13 @@ public class E2ETest {
         //Waiting for sometime shouldn't be an issue in test
         Thread.sleep(2000);
         IBanksHttpClient httpClient = BanksHttpClientFactory.getHttpClient(HttpClientEnum.APACHE);
-        TestModel[] testModels = httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V1, TestModel[].class);
-        Assert.assertEquals(3,testModels.length);
+        ResultModel[] testModels = httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V1, ResultModel[].class);
     }
 
     @Test
     public void testBanksRemoteServerBasedEndpoint() {
         IBanksHttpClient httpClient = BanksHttpClientFactory.getHttpClient(HttpClientEnum.APACHE);
-        TestModel[] testModels = httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V2, TestModel[].class);
+        ResultModel[] testModels = httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V2, ResultModel[].class);
         Assert.assertEquals(3,testModels.length);
     }
 
@@ -61,6 +66,6 @@ public class E2ETest {
     {
         BankBridgeJettyServer.stopJettyServer();
         IBanksHttpClient httpClient = BanksHttpClientFactory.getHttpClient(HttpClientEnum.APACHE);
-        httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V2, TestModel[].class);
+        httpClient.handleGet(BANK_NAME, APPLICATION_SERVER_ENDPOINT_V2, ResultModel[].class);
     }
 }

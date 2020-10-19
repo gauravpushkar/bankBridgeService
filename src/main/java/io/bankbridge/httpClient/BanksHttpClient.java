@@ -2,6 +2,7 @@ package io.bankbridge.httpClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.bankbridge.utils.BanksPropertyHandler;
+import io.bankbridge.utils.BanksUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -78,7 +79,7 @@ public class BanksHttpClient<T> implements IBanksHttpClient {
                 return null;
             }
             String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
-            availableBankDetails = transformJson(responseString, clazz);
+            availableBankDetails = BanksUtils.transformJson(responseString, clazz);
             LOGGER.info("Successfully fetched details of the bank {} from endpoint {}", bankName, bankEndPoint);
             //Only for trouble shooting purposes, such sensitive details shouldn't be in logs
             LOGGER.debug("Fetched data :: {}", responseString);
@@ -123,10 +124,5 @@ public class BanksHttpClient<T> implements IBanksHttpClient {
     @Override
     public <T> boolean handlePatch(String bankName, String bankEndpoint, Class<T> clazz) {
         return false;
-    }
-
-    private <T> T transformJson(String jsonString, Class<T> clazz) throws IOException {
-        T bankModel = new ObjectMapper().readValue(jsonString, clazz);
-        return bankModel;
     }
 }

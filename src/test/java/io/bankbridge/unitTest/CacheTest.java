@@ -1,4 +1,4 @@
-package io.bankbridge.unitsTests;
+package io.bankbridge.unitTest;
 
 import io.bankbridge.cache.CacheFactory;
 import io.bankbridge.utils.ApiVersionEnum;

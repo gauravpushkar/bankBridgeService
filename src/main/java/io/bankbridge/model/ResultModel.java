@@ -1,7 +1,6 @@
-package io.bankbridge.unitsTests;
+package io.bankbridge.model;
 
-public class TestModel {
-
+public class ResultModel {
     private String name;
     private String id;
 

@@ -34,6 +34,11 @@ public class BanksUtils {
         return model;
     }
 
+    public static  <T> T transformJson(String jsonString, Class<T> clazz) throws IOException {
+        T bankModel = new ObjectMapper().readValue(jsonString, clazz);
+        return bankModel;
+    }
+
     public static <T> String getJsonString(T model) throws JsonProcessingException {
         String jsonString = StringUtils.EMPTY;
         if (Objects.isNull(model)) {
