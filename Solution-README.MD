@@ -40,8 +40,9 @@
 # Do we have any Java docs for this ?
 * Yes!! Java docs can be found at location <root-folder>/target/apidocs
 
-#How to build
-*In case the machine already has java and maven <root-folder>/scripts/build.sh can be used.
+# How to build
+- For build with tests use <root-folder>/scripts/build.sh .
+- For build without tests use <root-folder>/scripts/buildWithoutTests.sh
 
 # What third-party libraries or other tools does the system use?
 * Apache Commons lib.
@@ -55,7 +56,7 @@
 * Around 8 hrs spanning across 3 days.
 
 # How to run the server?
-* For simplicity I have generated a shaded/fat/uber jar with all the dependencies and simple (java -jar <codingchallenge-1.0-launcher.jar>) command should be good enough to start the server.
+* For simplicity, I have generated a shaded/fat/uber jar with all the dependencies and simple (java -jar <codingchallenge-1.0-launcher.jar>) command should be good enough to start the server.
 * Same has been done in run.sh file apart from specific jvm args like
 - -Xms1024m
 - -Xmx2048m 
@@ -68,10 +69,10 @@
 - Unit Tests
 - E2E Tests 
 
-#What is the location of scripts 
+# What is the location of scripts 
 * Scripts can be found at location <root-folder>/scripts
 
-#Refactoring done
+# Refactoring done
 - Change in model w.r.t scope of fields and introduction of getters and setters.
 - Reuse of common handles like Object Mapper and utility functions across application
 - Implementation of CacheFactory
