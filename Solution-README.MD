@@ -17,7 +17,7 @@
 * I have configured Jersey framework to use async servlet.
 * This should help in increasing the throughput of the system.
 * We are also using in-memory cache to avoid remote calls if  the data is already present.
-* I would have liked to use different persistent tiers for ehcache but in-memory with 2k entries should be ok for this
+* **I would have liked to use different persistent tiers for ehcache** but in-memory with 2k entries should be ok for this
   solution. Although number of entries is configurable. 
 * HttpClient implementation is also enhanced with retry mechanism (default is 3 times and it is configurable).
 * In **real world system we use Resilience4J or Hysterix** like frameworks to handle failure condition on upstream services. 
@@ -26,14 +26,16 @@
 * I have configured G1GC for garbage collection.
 
 * _Disclaimer_ : I have not done standard benchmarking of the system using Gatling or JMeter. 
-* Though I was planning  to do so, but time factor pitched in :(
+
 
 # What documentation, websites, papers, etc did I consult in doing this assignment?
 * https://www.eclipse.org/jetty/documentation/current/embedding-jetty.html
 * https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest/index.html
 
 # Do we have any logging in the system?
-* Yes! I have configured SL4J with log4j2, to avoid any issues while writing log file on disk all logs will roll on STDOUT.
+* Yes! I have configured SL4J with log4j2, to avoid any issues while writing log file on disk all logs will roll 
+  on STDOUT. 
+* This pattern is actually helpful in using log aggregating tools like FluentD/Splunk/Logstash etc.
 
 # Do we have any Java docs for this ?
 * Yes!! Java docs can be found at location <root-folder>/target/apidocs
@@ -68,6 +70,18 @@
 
 #What is the location of scripts 
 * Scripts can be found at location <root-folder>/scripts
+
+#Refactoring done
+- Change in model w.r.t scope of fields and introduction of getters and setters.
+- Reuse of common handles like Object Mapper and utility functions across application
+- Implementation of CacheFactory
+- Implementation of HttpClientFactory returning apache http client.
+- Introduction of Interfaces to reduce brittleness in code.
+- Change in banks-v2.json (to hold mapping from bic to endpoint as name to endpoint mapping wasn't semantically right).
+- Introduced filtering of invalid data from remote endpoints.
+- Introduced cache in V2 api.
+- Introduction of Jetty Server along with Jersey (with async servlet)
+
 
 
 
